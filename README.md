@@ -16,17 +16,26 @@ B站（哔哩哔哩）视频下载器，支持普通视频和 UPOWER 充电专�
 
 ## 可执行文件（免安装 Python）
 
-在 [Actions](../../actions) 页面运行 **Build Executables** 工作流，产物在 Artifacts 区下载：
+**直接下载：** 前往 [Releases](../../releases) 页面（推荐，长期有效），下载对应平台的文件：
 
-| 产物 | 系统 | 架构 |
+| 文件 | 系统 | 架构 |
 |------|------|------|
-| `bilibili-downloader-Windows` | Windows 7 / 10 / 11 | x64 单文件 exe |
-| `bilibili-downloader-macOS-Intel` | macOS 13+（含 15 / 26） | Intel x86_64 |
-| `bilibili-downloader-macOS-AppleSilicon` | macOS 14+（含 15 / 26） | Apple Silicon arm64 |
+| `bilibili-downloader-Windows.exe` | Windows 7 / 10 / 11 | x64 单文件 exe |
+| `bilibili-downloader-macOS-Intel.zip` | macOS 15 / 26（Intel 机型） | Intel x86_64 |
+| `bilibili-downloader-macOS-AppleSilicon.zip` | macOS 14 / 15 / 26（M 系列芯片） | Apple Silicon arm64 |
 
 所有产物均为单文件，内置 Python 运行时与全部依赖（含 ffmpeg），无需安装任何环境。
 
 > Windows 版本使用 Python 3.8 + PyInstaller 5.13 构建，兼容 Win7。
+> 也可以在 [Actions](../../actions) 页面手动触发 **Build Executables** 工作流自行构建。
+
+### 首次运行提示
+
+- **macOS**：解压 zip 后双击 `bilibili-downloader.app`。若提示"无法验证开发者"，在终端执行一次（把路径换成实际路径）：
+  ```bash
+  xattr -cr /路径/bilibili-downloader.app
+  ```
+- **Windows**：首次运行若被 SmartScreen 拦截，点击"更多信息" → "仍要运行"。
 
 ## 从源码运行
 
