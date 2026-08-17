@@ -1,0 +1,69 @@
+name: Build Executables
+
+# 手动触发：Actions 页面点 "Run workflow"
+# 或推送到 master 分支时自动构建
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Intel 芯片 (x86_64) — 兼容 macOS 13 及以上（含 15 Sequoia / 26 Tahoe）
+          - os: macos-13
+            label: macOS-Intel
+          # Apple Silicon (arm64 M1/M2/M3/M4) — 兼容 macOS 14 及以上（含 15 / 26）
+          - os: macos-14
+            label: macOS-AppleSilicon
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyinstaller imageio-ffmpeg
+
+      - name: Build .app bundle
+        run: pyinstaller --onefile --windowed --name bilibili-downloader app.py
+
+      - name: Package artifact
+        run: |
+          cd dist
+          zip -r "bilibili-downloader-${{ matrix.label }}.zip" bilibili-downloader.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bilibili-downloader-${{ matrix.label }}
+          path: dist/bilibili-downloader-${{ matrix.label }}.zip
+          retention-days: 30
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python 3.8 是最后一个支持 Windows 7 的版本
+      # 构建产物可在 Win7 / Win10 / Win11 上运行
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller==5.13.2 imageio-ffmpeg
+
+      - name: Build single-file exe
+        run: pyinstaller --onefile --windowed --name bilibili-downloader app.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bilibili-downloader-Windows
+          path: dist/bilibili-downloader.exe
+          retention-days: 30
